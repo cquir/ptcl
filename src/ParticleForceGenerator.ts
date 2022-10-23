@@ -47,4 +47,25 @@ class ParticleDrag implements ParticleForceGenerator {
   }
 }
 
-export { ParticleForceGenerator, ParticleGravity, ParticleDrag };
+class ParticleAttractor implements ParticleForceGenerator {
+	gravity: THREE.Vector3;
+	norm: number;
+
+	constructor(attractor: THREE.Vector3, norm: number) {
+		this.attractor = attractor;
+		this.norm = norm;
+	}
+
+	updateForce(particle: Particle, dt: number): void {
+
+		const force = this.attractor.clone();
+		force.addScaledVector(particle.position.clone(),-1);
+		force.normalize();
+
+		force.multiplyScalar(this.norm); 
+		particle.addForce(force);
+
+	}	
+}
+
+export { ParticleForceGenerator, ParticleGravity, ParticleDrag, ParticleAttractor };
