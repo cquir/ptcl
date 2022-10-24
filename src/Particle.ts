@@ -42,7 +42,7 @@ class Particle {
   }
 
   hasFiniteMass(): boolean {
-    return this.inverseMass >= 0.0;
+    return this.inverseMass > 0.0;
   }
 
   integrate(dt: number) {
@@ -56,12 +56,12 @@ class Particle {
     this.position.addScaledVector(this.velocity, dt);
 
     // Work out the acceleration from the force
-    const resultingAcc = this.acceleration.clone();
+    this.acceleration.set(0,0,0);
 
-    resultingAcc.addScaledVector(this.forceAccum, this.inverseMass);
+    this.acceleration.addScaledVector(this.forceAccum, this.inverseMass);
 
     // Update linear velocity from the acceleration
-    this.velocity.addScaledVector(resultingAcc, dt);
+    this.velocity.addScaledVector(this.acceleration, dt);
 
     // Impose drag
     this.velocity.multiplyScalar(Math.pow(this.damping, dt));
