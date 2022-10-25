@@ -1,3 +1,14 @@
-# Particles
+# Particles 
 
-The aim of this project is to build a physics engine using particle systems.
+A lightweight physics engine for powering particle systems in threejs.  
+
+## Quick start
+
+```ts
+```
+
+## Running tests
+
+```bash
+npm run tests
+```
