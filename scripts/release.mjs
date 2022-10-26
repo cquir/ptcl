@@ -1,28 +1,27 @@
 import fs from "fs";
-import path from "path";
+// import path from "path";
 import { Octokit } from "@octokit/rest";
-import archiver from "";
 
-async function uploadPlugin(github, asset, uploadURL) {
-  const contentLength = (filePath) => fs.statSync(filePath).size;
-  const contentType = "binary/octet-stream";
-  // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
-  // for more information
-  const headers = {
-    "content-type": contentType,
-    "content-length": contentLength(asset),
-  };
+// async function uploadPlugin(github, asset, uploadURL) {
+//   const contentLength = (filePath) => fs.statSync(filePath).size;
+//   const contentType = "binary/octet-stream";
+//   // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
+//   // for more information
+//   const headers = {
+//     "content-type": contentType,
+//     "content-length": contentLength(asset),
+//   };
 
-  const assetName = path.basename(asset);
-  console.log(`Uploading ${assetName}`);
+//   const assetName = path.basename(asset);
+//   console.log(`Uploading ${assetName}`);
 
-  const uploadAssetResponse = await github.repos.uploadReleaseAsset({
-    url: uploadURL,
-    headers,
-    name: assetName,
-    data: fs.readFileSync(asset),
-  });
-}
+//   const uploadAssetResponse = await github.repos.uploadReleaseAsset({
+//     url: uploadURL,
+//     headers,
+//     name: assetName,
+//     data: fs.readFileSync(asset),
+//   });
+// }
 
 async function doesReleaseExist(github, tag_name) {
   try {
@@ -43,7 +42,7 @@ async function main() {
   const github = octokit.rest;
 
   const packageJSON = JSON.parse(
-    fs.readFileSync("./extension-core/package.json", {
+    fs.readFileSync("./package.json", {
       encoding: "utf8",
       flag: "r",
     })
