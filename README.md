@@ -14,9 +14,7 @@ This code creates an animation of a particle being thrown up in the air and fall
 
 ```ts
 import * as THREE from 'three';
-import Particle from "./physics/Particle";
-import ParticleWorld from "./physics/ParticleWorld";
-import { ParticleGravity } from "./physics/ParticleForceGenerator";
+import { Particle, ParticleWorld, ParticleGravity } from 'ptcl';
     
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 10;
