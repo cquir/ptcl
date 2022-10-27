@@ -6,6 +6,9 @@ class Particle {
   acceleration: THREE.Vector3;
 
   damping: number;
+  // ignore typescript since we set this value 
+  // in the constructor indirectly
+  //@ts-ignore
   inverseMass: number;
 
   forceAccum: THREE.Vector3;
@@ -14,6 +17,7 @@ class Particle {
   mesh: undefined | THREE.Mesh;
 
   constructor(position = new THREE.Vector3(), mass = 5, damping = 0.8) {
+
     this.position = position;
     this.velocity = new THREE.Vector3();
     this.acceleration = new THREE.Vector3();
