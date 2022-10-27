@@ -1,42 +1,37 @@
 import * as THREE from "three";
-import {Particle} from "../src";
-
-function addForce(force) {
-  const p = new Particle();
-  p.addForce(force);
-  return p.forceAccum.toArray();
-}
+import { Particle } from "../src";
 
 test("add force", () => {
   const force = new THREE.Vector3(0, -20, 0);
-  expect(addForce(force)).toEqual(force.toArray());
+
+  const p = new Particle();
+  p.addForce(force);
+
+  expect(p.forceAccum.toArray()).toEqual(force.toArray());
 });
 
-function setMass(mass) {
+test("inverse mass test 1", () => {
   const p = new Particle();
-  p.setMass(mass);
-  return p.inverseMass;
-}
+  p.setMass(2);
 
-test("calculate inverse mass", () => {
-  expect(setMass(2)).toBe(0.5);
+  expect(p.inverseMass).toBe(0.5);
 });
 
-function getMass(inverseMass) {
+test("inverse mass test 2", () => {
   const p = new Particle();
-  p.inverseMass = inverseMass;
-  return p.getMass();
-}
+  p.setMass(0.5);
 
-test("retrieve mass", () => {
-  expect(getMass(0.5)).toBe(2);
+  expect(p.inverseMass).toBe(2);
 });
 
 test("retrieve mass (Infinity case)", () => {
-  expect(getMass(0)).toBe(Infinity);
+  const p = new Particle();
+  p.setMass(0);
+
+  expect(p.inverseMass).toBe(Infinity);
 });
 
-function hasFiniteMass(inverseMass) {
+function hasFiniteMass(inverseMass : number) {
   const p = new Particle();
   p.inverseMass = inverseMass;
   return p.hasFiniteMass();
@@ -50,7 +45,7 @@ test("determine if mass is finite (false case)", () => {
   expect(hasFiniteMass(0)).toBe(false);
 });
 
-function integratePosition(dt, velocity) {
+function integratePosition(dt : number, velocity : THREE.Vector3) {
   const p = new Particle();
   p.velocity = velocity;
   p.integrate(dt);
@@ -63,7 +58,7 @@ test("update linear position", () => {
   expect(integratePosition(0.1, velocity)).toEqual(position.toArray());
 });
 
-function integrateAcceleration(dt, forceAccum, inverseMass) {
+function integrateAcceleration(dt : number, forceAccum : THREE.Vector3, inverseMass : number) {
   const p = new Particle();
   p.forceAccum = forceAccum;
   p.inverseMass = inverseMass;
@@ -79,7 +74,7 @@ test("work out the acceleration from the force", () => {
   );
 });
 
-function integrateVelocity(dt, forceAccum, inverseMass) {
+function integrateVelocity(dt : number, forceAccum : THREE.Vector3, inverseMass : number) {
   const p = new Particle();
   p.forceAccum = forceAccum;
   p.inverseMass = inverseMass;
@@ -94,7 +89,7 @@ test("update linear velocity from the acceleration", () => {
   expect(integrateVelocity(0.1, forceAccum, 0.5)).toEqual(velocity.toArray());
 });
 
-function integrateDrag(dt, velocity, damping) {
+function integrateDrag(dt : number, velocity : THREE.Vector3, damping : number) {
   const p = new Particle();
   p.velocity = velocity;
   p.damping = damping;
@@ -108,7 +103,7 @@ test("impose drag", () => {
   expect(integrateDrag(2, initialVelocity, 3)).toEqual(finalVelocity.toArray());
 });
 
-function clearAccumulator(forceAccum) {
+function clearAccumulator(forceAccum : THREE.Vector3) {
   const p = new Particle();
   p.forceAccum = forceAccum;
   p.clearAccumulator();
