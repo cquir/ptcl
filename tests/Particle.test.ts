@@ -10,21 +10,21 @@ test("add force", () => {
   expect(p.forceAccum.toArray()).toEqual(force.toArray());
 });
 
-test("inverse mass test 1", () => {
+test("set mass", () => {
   const p = new Particle();
   p.setMass(2);
 
   expect(p.inverseMass).toBe(0.5);
 });
 
-test("inverse mass test 2", () => {
+test("retrieve mass (finite case)", () => {
   const p = new Particle();
-  p.setMass(0.5);
+  p.inverseMass = 0.5
 
-  expect(p.inverseMass).toBe(2);
+  expect(p.getMass()).toBe(2);
 });
 
-test("inverse mass test 0", () => {
+test("retrieve mass (infinite case)", () => {
    const p = new Particle();
    p.inverseMass = 0;	
 
