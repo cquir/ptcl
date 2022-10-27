@@ -21,7 +21,7 @@ async function build() {
         ".wav": "dataurl",
         ".mp3": "dataurl",
       },
-      external: ["./node_modules/*"],
+      external: ["three", "three-stdlib"],
       // external: ["require", "fs", "crypto", "assert", "url"],
       define: {
         "process.env.NODE_ENV": `"development"`,
