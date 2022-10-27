@@ -24,12 +24,12 @@ test("inverse mass test 2", () => {
   expect(p.inverseMass).toBe(2);
 });
 
-test("retrieve mass (Infinity case)", () => {
-  const p = new Particle();
-  p.setMass(0);
+// test("retrieve mass (Infinity case)", () => {
+//   const p = new Particle();
+//   p.setMass(0);
 
-  expect(p.inverseMass).toBe(Infinity);
-});
+//   expect(p.inverseMass).toBe(Infinity);
+// });
 
 function hasFiniteMass(inverseMass : number) {
   const p = new Particle();
