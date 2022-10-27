@@ -6,14 +6,10 @@ async function build() {
       entryPoints: ["src/index.ts"],
       outdir: "dist/",
       bundle: true,
-      minify: false,
-      treeShaking: false,
+      minify: true,
+      treeShaking: true,
       sourcemap: true,
       loader: {
-        ".png": "dataurl",
-        ".gif": "text",
-        ".tmLanguage": "text",
-        ".ttf": "text",
         ".json": "text",
         ".glsl": "text",
         ".frag": "text",
@@ -24,13 +20,15 @@ async function build() {
         ".wav": "dataurl",
         ".mp3": "dataurl",
       },
-      external: ["require", "fs", "crypto", "assert", "url"],
+      external: [
+        "three",
+        "three-stdlib"
+      ],
+      // external: ["require", "fs", "crypto", "assert", "url"],
       define: {
         "process.env.NODE_ENV": `"development"`,
       },
-      plugins: [
-        // svgrPlugin()
-      ],
+      plugins: [],
     })
     .then((result) => console.log(result));
 }

@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three-stdlib";
 import "./index.css";
-import Particle from "./physics/Particle";
-import ParticleWorld from "./physics/ParticleWorld";
-import { ParticleAttractor } from "./physics/ParticleForceGenerator";
-import { Vector3 } from "three";
+import {
+    Particle,
+    ParticleWorld,
+    ParticleAttractor,
+} from "ptcl";
 
 let clock = new THREE.Clock();
 
@@ -34,7 +35,7 @@ scene.add(earth);
 for (let i = 0; i < 50; i ++) {
 
 	const p = new Particle(
-	  new Vector3(-2-3*Math.random(),0,0),
+	  new THREE.Vector3(-2-3*Math.random(),0,0),
 	  1,
 	  0.97, 
 	);
