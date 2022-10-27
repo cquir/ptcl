@@ -6,3 +6,5 @@ tests
 jest.config.js
 tsconfig.json
 .github
+scripts
+coverage

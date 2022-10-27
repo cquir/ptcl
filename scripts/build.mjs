@@ -8,6 +8,7 @@ async function build() {
       bundle: true,
       minify: true,
       treeShaking: true,
+      platform: "node",
       sourcemap: true,
       loader: {
         ".json": "text",
@@ -20,10 +21,7 @@ async function build() {
         ".wav": "dataurl",
         ".mp3": "dataurl",
       },
-      external: [
-        "three",
-        "three-stdlib"
-      ],
+      external: ["./node_modules/*"],
       // external: ["require", "fs", "crypto", "assert", "url"],
       define: {
         "process.env.NODE_ENV": `"development"`,
