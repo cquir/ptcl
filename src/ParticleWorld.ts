@@ -43,6 +43,18 @@ class ParticleWorld {
 
   }
 
+  updateGraphics() {
+    for (let particle of this.particles) {
+      if (particle.mesh !== undefined) {
+        particle.mesh.position.set(
+        particle.position.x,
+        particle.position.y,
+        particle.position.z
+        );
+      }
+    }
+  }
+
 }
 
 export default ParticleWorld;
