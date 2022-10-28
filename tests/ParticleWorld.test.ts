@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import {Particle,ParticleWorld} from "../src";
 
-function addParticle(particle) {
+function addParticle(particle:Particle) {
 	const world = new ParticleWorld();
 	world.addParticle(particle);
 	return world.particles[0];
@@ -12,7 +12,7 @@ test("add particle", () => {
 	expect(addParticle(p)).toEqual(p); 
 });
 
-function removeParticle(particle) {
+function removeParticle(particle:Particle) {
 	const world = new ParticleWorld();
 	world.addParticle(particle);
 	world.removeParticle(particle);
@@ -24,7 +24,7 @@ test("remove particle", () => {
 	expect(removeParticle(p)).toBe(0);
 });
 
-function integrate(particle,dt) {
+function integrate(particle:Particle,dt:number) {
 	const world = new ParticleWorld();
 	world.addParticle(particle)
 	world.integrate(dt)
