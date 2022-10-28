@@ -61,8 +61,6 @@ for (let i = 0; i < 50; i ++) {
 function animate() {
   requestAnimationFrame(animate);
 
-  world.startFrame();
-
   controls.update();
 
   world.runPhysics(clock.getDelta());
