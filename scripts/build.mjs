@@ -9,6 +9,7 @@ async function build() {
       minify: true,
       treeShaking: true,
       platform: "node",
+      format: "esm",
       sourcemap: true,
       loader: {
         ".json": "text",
@@ -22,7 +23,6 @@ async function build() {
         ".mp3": "dataurl",
       },
       external: ["three", "three-stdlib"],
-      // external: ["require", "fs", "crypto", "assert", "url"],
       define: {
         "process.env.NODE_ENV": `"development"`,
       },

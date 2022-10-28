@@ -17,7 +17,7 @@ camera.position.y = 2;
 camera.position.z = 10;
 
 //@ts-ignore
-const renderer = new THREE.WebGLRenderer({canvas: document.getElementById("game")});
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById("canvas")});
 renderer.setSize( window.innerWidth, window.innerHeight );
 
 let controls = new OrbitControls( camera, renderer.domElement );

@@ -19,17 +19,17 @@ function createPackageJSON(name) {
   },
   "license": "ISC",
   "dependencies": {
-    "three": "^0.145.0",
-    "three-stdlib": "^2.17.3"
+    "three": "0.145.0",
+    "three-stdlib": "2.17.3"
   },
   "devDependencies": {
-    "@types/three": "^0.144.0",
-    "cors": "^2.8.5",
-    "esbuild": "^0.14.48",
-    "express": "^4.18.1",
-    "fs-extra": "^10.1.0",
-    "open": "^8.4.0",
-    "ws": "^8.8.0"
+    "@types/three": "0.144.0",
+    "cors": "2.8.5",
+    "esbuild": "0.14.48",
+    "express": "4.18.1",
+    "fs-extra": "10.1.0",
+    "open": "8.4.0",
+    "ws": "8.8.0"
   }
 }  
 `}
@@ -53,11 +53,10 @@ function createIndexHTML(name) {
   <body oncontextmenu="return false;">
     
     <div style="width: 100vw; height: 100vh;">
-      <canvas id="game" style="width: 100%; height: 100%;"></canvas>
+      <canvas id="canvas" style="width: 100%; height: 100%;"></canvas>
     </div>
     
     <script src="/index.js"></script>
-
 
   </body>
 </html>
