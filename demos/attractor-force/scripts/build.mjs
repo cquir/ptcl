@@ -7,7 +7,7 @@ async function build() {
     entryPoints: ["./src/index.ts"],
     outdir: "./dist",
     bundle: true,
-    minify: true,
+    minify: false,
     platform: "node",
     format: "esm",
     sourcemap: false,
@@ -25,8 +25,7 @@ async function build() {
       ".wav": "dataurl",
       ".mp3": "dataurl",
     },
-    // TODO: Use CDNs for three and three-stdlib
-    external: ["three", "three-stdlib"],
+    external: ["three", "three-stdlib", "ptcl"],
   });
 
   const packageJSON = JSON.parse(fs.readFileSync(`./package.json`).toString());
