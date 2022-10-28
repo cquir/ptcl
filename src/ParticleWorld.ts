@@ -28,12 +28,6 @@ class ParticleWorld {
     }
   }
 
-  startFrame() {
-    for (let particle of this.particles) {
-      particle.clearAccumulator();
-    }
-  }
-
   runPhysics(dt : number) : void {
 
     // TODO - update this to use force registry system
