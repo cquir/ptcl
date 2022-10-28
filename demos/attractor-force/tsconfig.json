@@ -1,20 +1,14 @@
 {
   "compilerOptions": {
-    "module": "AMD",
-    "declaration": true,
     "target": "esnext",
-    "lib": ["esnext", "dom"],
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "module": "ESNext",
     "rootDirs": ["src"],
     "skipLibCheck": true,
+    "types": ["@types/ptcl"]
   },
-  "include": [
-    "./src/*",
-  ],
-  "exclude": [
-    "./demos/*",
-  ]
+  "include": ["./src/*"]
 }
