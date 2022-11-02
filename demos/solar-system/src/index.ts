@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import "./index.css";
 import { OrbitControls } from "three-stdlib";
-import { ParticleAttractor, Particle, ParticleWorld } from "ptcl";
+import { Particle, ParticleWorld } from "ptcl";
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -46,9 +46,11 @@ for (let i = 0; i < 8; i++) {
   const radius = 0.5 * i + 2;
   const period = periods[i];
   const p = new Particle(new THREE.Vector3(-radius, 0, 0), 1, dampings[i]);
+
   const forceNorm = radius * ((2 * Math.PI) / period) ** 2;
   const attractor = new THREE.Vector3(0, 0, 0);
-  world.registry.add(p, new ParticleAttractor(attractor, forceNorm));
+  p.userData.attractor = attractor;
+	p.userData.forceNorm = forceNorm;
   world.addParticle(p);
 
   const speed = Math.sqrt(radius * forceNorm);
@@ -98,6 +100,18 @@ function animate() {
   controls.update();
 
   world.runPhysics(clock.getDelta());
+
+	// apply attractor force
+	for (let particle of world.particles) {
+		const force = particle.userData.attractor.clone();
+    force.addScaledVector(particle.position.clone(), -1);
+    force.normalize();
+
+    force.multiplyScalar(particle.userData.forceNorm);
+    particle.addForce(force);
+
+	}
+
   world.updateGraphics();
 
   renderer.render(scene, camera);
