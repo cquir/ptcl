@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three-stdlib";
-import { Particle, ParticleWorld,ParticleAttractor } from "ptcl";
+import Particle from "./physics/Particle";
+import ParticleWorld from "./physics/ParticleWorld";
+import { ParticleAttractor } from "./physics/ParticleForceGenerator";
 
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.y = 7;
@@ -13,12 +15,12 @@ let clock = new THREE.Clock();
 
 const world = new ParticleWorld();
 
-const periods = [0.240846,0.615,1,1.881,11.86,29.46,84.01,164.8].map(x => x*25);
-const dampings = [0.982,0.9970,0.9988,0.9997,0.99995,0.99999,0.99999,0.99999];
+const periods = [0.240846,0.615,1,1.881,11.86,29.46,84.01,164.8].map(x => x*30);
+const dampings = [0.9875,0.9980,0.9992,0.9997,0.99995,0.99999,0.99999,0.99999];
 const colors = ["rgb(81,81,81)","rgb(255,158,67)","rgb(0,181,255)","rgb(244,44,63)",
 	"rgb(237,102,53)","rgb(234,187,76)","rgb(198,211,227)","rgb(71,126,253)"];
-const logPlanetRadius = [2.440,6.052,6.371,3.390,69.911,58.232,25.362,24.622].map(x => Math.log10(x));
-const meshRadius = Array(8).fill(0).map((x,i) => x+0.20*logPlanetRadius[i]/logPlanetRadius[5]);
+const logRadius = [2.440,6.052,6.371,3.390,69.911,58.232,25.362,24.622].map(x => Math.log10(x));
+const meshRadius = Array(8).fill(0).map((x,i) => x+0.20/logRadius[4]*logRadius[i]);
 
 for (let i=0; i<8; i++) {
 	const radius = 0.5*i+2;
