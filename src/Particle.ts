@@ -16,6 +16,9 @@ class Particle {
   // temp var for debug
   mesh: undefined | THREE.Mesh;
 
+  // TODO: if we like this then we expand on this and enforce the serializability of userData 
+  userData : any = {};
+
   constructor(position = new THREE.Vector3(), mass = 5, damping = 0.8) {
 
     this.position = position;
