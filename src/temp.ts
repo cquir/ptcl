@@ -1,75 +1,196 @@
-const maxParticles = 4;
+import * as THREE from "three";
 
 //0-2: position, 3-5: velocity, 6-8: acceleration (forceAccum is redundant), 9: damping, 10: 1/mass
-const particleLength = 11;
+const pSize = 11;
 
-let particles = new Float32Array(maxParticles*particleLength);
+class ParticleRef {
+  // particle index
+  pIndex: number;
+  particles: Particles;
 
-for (let i=0; i < maxParticles*particleLength; i+=particleLength) {
-	particles[i+9] = 0.9999; // default damping
+  constructor(i: number, particles: Particles) {
+    this.pIndex = i;
+    // keep a reference to the main particles class
+    // which stores the particle buffer data structure
+    this.particles = particles;
+  }
+
+  setPosition(x: number, y: number, z: number) {
+    this.particles._setPosition(this.pIndex, x, y, z);
+  }
+
+  setVelocity(x: number, y: number, z: number) {
+    this.particles._setVelocity(this.pIndex, x, y, z);
+  }
+
+  setAcceleration(x: number, y: number, z: number) {
+    this.particles._setAcceleration(this.pIndex, x, y, z);
+  }
+
+  addForce(x: number, y: number, z: number) {
+    this.particles._addForce(this.pIndex, x, y, z);
+  }
+
+  setDamping(damping: number) {
+    this.particles._setDamping(this.pIndex, damping);
+  }
+
+  setMass(mass: number) {
+    this.particles._setMass(this.pIndex, mass);
+  }
+
+  getMass(): number {
+    return this.particles._getMass(this.pIndex);
+  }
 }
 
-function setPosition(position,particleIndex) {
-	particles[particleIndex*particleLength] = position[0];
-	particles[particleIndex*particleLength+1] = position[1];
-	particles[particleIndex*particleLength+2] = position[2];
+class ParticleIterator implements Iterator<ParticleRef> {
+  cursor: number;
+  particles: Particles;
+
+  constructor(particles: Particles) {
+    this.cursor = 0;
+    this.particles = particles;
+  }
+
+  next(): IteratorResult<ParticleRef> {
+    if (this.cursor >= this.particles.maxParticles) {
+      return {
+        value: null,
+        done: true,
+      };
+    }
+
+    return {
+      value: this.particles.get(this.cursor++),
+      done: false,
+    };
+  }
 }
 
-function setVelocity(velocity,particleIndex) {
-	particles[particleIndex*particleLength+3] = velocity[0];
-	particles[particleIndex*particleLength+4] = velocity[1];
-	particles[particleIndex*particleLength+5] = velocity[2];
+// TODO rename this class and the other classes because name sux
+// 			everything probably needs rethinking though so no rush I suppose
+//
+// I also decided to prefixed all the methods on this class to make it somewhat clear
+// that you are calling an internal component of the library, _ before a method indicates an
+// internal method usually but in this case I am just signaling to be careful calling it directly
+//
+class Particles {
+  maxParticles: number;
+  data: Float32Array;
+
+  constructor(maxParticles: number) {
+    this.maxParticles = maxParticles;
+    this.data = new Float32Array(maxParticles * pSize);
+
+    // initialize mass (for now probably want to change this)
+    for (let i = 0; i < maxParticles * pSize; i += pSize) {
+      this.data[i + 10] = 1; // default damping
+    }
+
+    // initialize damping
+    for (let i = 0; i < maxParticles * pSize; i += pSize) {
+      this.data[i + 9] = 0.9999; // default damping
+    }
+  }
+
+  _setPosition(i: number, x: number, y: number, z: number) {
+    this.data[i * pSize] = x;
+    this.data[i * pSize + 1] = y;
+    this.data[i * pSize + 2] = z;
+  }
+
+  _setVelocity(i: number, x: number, y: number, z: number) {
+    this.data[i * pSize + 3] = x;
+    this.data[i * pSize + 4] = y;
+    this.data[i * pSize + 5] = z;
+  }
+
+  _setAcceleration(i: number, x: number, y: number, z: number) {
+    this.data[i * pSize + 6] = x;
+    this.data[i * pSize + 7] = y;
+    this.data[i * pSize + 8] = z;
+  }
+
+  _setDamping(i: number, damping: number) {
+    this.data[i * pSize + 9] = damping;
+  }
+
+  _setMass(i: number, mass: number) {
+    this.data[i * pSize + 10] = 1 / mass;
+  }
+
+  _getMass(i: number): number {
+    const inverseMass = this.data[i * pSize + 10];
+    if (inverseMass == 0) {
+      return this.data[i * pSize + 10];
+    } else {
+      return 1 / inverseMass;
+    }
+  }
+
+  _addForce(i: number, x: number, y: number, z: number) {
+    const inverseMass = this.data[i * pSize + 10];
+    this.data[i * pSize + 6] += x * inverseMass;
+    this.data[i * pSize + 7] += y * inverseMass;
+    this.data[i * pSize + 8] += z * inverseMass;
+  }
+
+  integrate(dt: number) {
+    for (let i = 0; i < this.maxParticles * pSize; i += pSize) {
+      // Update linear position: pos += vel * dt
+      this.data[i * pSize] += dt * this.data[i * pSize + 3]; // x
+      this.data[i * pSize + 1] += dt * this.data[i * pSize + 4]; // y
+      this.data[i * pSize + 2] += dt * this.data[i * pSize + 5]; // z
+
+      // Update velocity
+      this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
+      this.data[i * pSize + 4] += dt * this.data[i * pSize + 7];
+      this.data[i * pSize + 5] += dt * this.data[i * pSize + 8];
+
+      // Impose drag
+      this.data[i * pSize + 3] *= Math.pow(this.data[i * pSize + 9], dt);
+      this.data[i * pSize + 4] *= Math.pow(this.data[i * pSize + 9], dt);
+      this.data[i * pSize + 5] *= Math.pow(this.data[i * pSize + 9], dt);
+
+      // zero out acceleration
+      this.data[i * pSize + 6] = 0;
+      this.data[i * pSize + 7] = 0;
+      this.data[i * pSize + 8] = 0;
+    }
+  }
+
+  getPosition(i: number): THREE.Vector3 {
+    return new THREE.Vector3(
+      this.data[i * pSize],
+      this.data[i * pSize + 1],
+      this.data[i * pSize + 2]
+    );
+  }
+
+  getVelocity(i: number): THREE.Vector3 {
+    return new THREE.Vector3(
+      this.data[i * pSize + 3],
+      this.data[i * pSize + 4],
+      this.data[i * pSize + 5]
+    );
+  }
+
+  getAcceleration(i: number): THREE.Vector3 {
+    return new THREE.Vector3(
+      this.data[i * pSize + 6],
+      this.data[i * pSize + 7],
+      this.data[i * pSize + 8]
+    );
+  }
+
+  get(i: number) {
+    return new ParticleRef(i, this);
+  }
+
+  [Symbol.iterator]() {
+    return new ParticleIterator(this);
+  }
 }
 
-function setDamping(damping,particleIndex) {
-	particles[particleIndex*particleLength+9] = damping;
-}
-
-function addForce(force,particleIndex) {
-	const inverseMass = particles[particleIndex*particleLength+10];
-	particles[particleIndex*particleLength+6] += force[0]*inverseMass;
-	particles[particleIndex*particleLength+7] += force[1]*inverseMass;
-	particles[particleIndex*particleLength+8] += force[2]*inverseMass;
-}
-
-function setMass(mass,particleIndex) {
-	if (mass == 0) {
-		throw new Error("mass cannot be zero!");
-	}
-	particles[particleIndex*particleLength+10] = 1/mass;
-}
-
-function getMass(particleIndex) {
-	const inverseMass = particles[particleIndex*particleLength+10];
-	if (inverseMass == 0) {
-		return Infinity;
-	} else {
-		return 1/inverseMass;
-	}
-}
-
-function updateForce(dt,particleIndex) {
-	// calculate delta force = (force at next time step) - (force at current time step)
-	const deltaForce = [0,0,0]; // temp
-	addForce(deltaForce,particleIndex);
-}
-
-function integrate(dt) {
-	for (let i=0; i < maxParticles*particleLength; i+=particleLength){
-		for (let j=0; j < 3; j++){
-			particles[i+j] += dt*particles[i+j+3]; // update position
-			particles[i+j+3] += dt*particles[i+j+6]; // update velocity
-			particles[i+j+3] *= particles[i+9]**dt; // impose drag
-		}
-		updateForce(dt,i/particleLength);
-	}
-}
-
-// example
-setPosition([1,1,1],0);
-setVelocity([2,0,0],0);
-setMass(5,0);
-addForce([0,5*-10,0],0);
-integrate(0.1);
-
-console.log(particles);
+export default Particles;
