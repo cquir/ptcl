@@ -17,20 +17,25 @@ const renderer = new THREE.WebGLRenderer({
   //@ts-ignore
   canvas: document.getElementById("canvas"),
 });
-renderer.setSize(window.innerWidth, window.innerHeight);
+// renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.innerWidth / 2, window.innerHeight / 2);
+renderer.domElement.style.width = "100vw";
+renderer.domElement.style.height = "100vh";
+renderer.setPixelRatio(window.devicePixelRatio);
+
 const controls = new OrbitControls(camera, renderer.domElement);
 
 function initParticle(particle: ParticleRef) {
   particle.resetState();
   particle.setMass(2);
-  particle.addForce(
+  particle.setVelocity(
     (Math.random() - 0.5) * 5,
-    5 + (Math.random() + 0.5) * 15,
-    Math.random() - 0.5
+    5 + (Math.random() + 0.5) * 5,
+    (Math.random() - 0.5) * 5
   );
 }
 
-const maxParticles = 100_000;
+const maxParticles = 1000;
 const particles = new Particles(maxParticles);
 
 for (let particle of particles) {
@@ -91,7 +96,7 @@ function animate() {
   // and the iterator adds a lil bit of overhead.
   for (let i = 0; i < maxParticles; i++) {
     // apply gravity
-    particles._addForce(i, 0, -1, 0);
+    particles._addForce(i, 0, -10, 0);
 
     // if we fall below -10 reset the particle
     if (particles.data[i * pSize + 1] < -10) {

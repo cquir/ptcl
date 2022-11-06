@@ -94,6 +94,7 @@ class ParticleIterator implements Iterator<ParticleRef> {
 class Particles {
   maxParticles: number;
   data: Float32Array;
+  constantForceAccum : THREE.Vector3;
 
   constructor(maxParticles: number) {
     this.maxParticles = maxParticles;
@@ -103,6 +104,8 @@ class Particles {
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
       this.data[i + 9] = 0.9999; // default damping
     }
+
+    this.constantForceAccum = new THREE.Vector3(0,0,0);
   }
 
   _setPosition(i: number, x: number, y: number, z: number) {
@@ -144,9 +147,17 @@ class Particles {
   }
 
   _addForce(i: number, x: number, y: number, z: number) {
+    // update forceAccum
     this.data[i * pSize + 11] += x;
     this.data[i * pSize + 12] += y;
     this.data[i * pSize + 13] += z;
+  }
+
+  _addGlobalConstantForce(x: number, y: number, z: number) {
+    // update forceAccum
+    this.constantForceAccum.x += x;
+    this.constantForceAccum.y += y;
+    this.constantForceAccum.z += z;
   }
 
   integrate(dt: number) {
@@ -158,9 +169,9 @@ class Particles {
 
       // Work out acceleration from the force
       const inverseMass = this.data[i * pSize + 10];
-      this.data[i * pSize + 6] += this.data[i * pSize + 11] * inverseMass;
-      this.data[i * pSize + 7] += this.data[i * pSize + 12] * inverseMass;
-      this.data[i * pSize + 8] += this.data[i * pSize + 13] * inverseMass;
+      this.data[i * pSize + 6] = this.data[i * pSize + 11] * inverseMass;
+      this.data[i * pSize + 7] = this.data[i * pSize + 12] * inverseMass;
+      this.data[i * pSize + 8] = this.data[i * pSize + 13] * inverseMass;
 
       // Update velocity
       this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
@@ -173,9 +184,9 @@ class Particles {
       this.data[i * pSize + 5] *= Math.pow(this.data[i * pSize + 9], dt);
 
       // clear forceAccum
-      this.data[i * pSize + 11] = 0;
-      this.data[i * pSize + 12] = 0;
-      this.data[i * pSize + 13] = 0;
+      this.data[i * pSize + 11] = this.constantForceAccum.x;
+      this.data[i * pSize + 12] = this.constantForceAccum.y;
+      this.data[i * pSize + 13] = this.constantForceAccum.z;
     }
   }
 
@@ -220,9 +231,6 @@ class Particles {
   }
 }
 
-export {
-  ParticleRef,
-  pSize
-}
+export { ParticleRef, pSize };
 
 export default Particles;
