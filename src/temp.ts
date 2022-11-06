@@ -83,11 +83,6 @@ class Particles {
     this.maxParticles = maxParticles;
     this.data = new Float32Array(maxParticles * pSize);
 
-    // initialize mass (for now probably want to change this)
-    for (let i = 0; i < maxParticles * pSize; i += pSize) {
-      this.data[i + 10] = 1; // default damping
-    }
-
     // initialize damping
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
       this.data[i + 9] = 0.9999; // default damping
@@ -117,13 +112,16 @@ class Particles {
   }
 
   _setMass(i: number, mass: number) {
+	if (mass == 0) {
+		throw new Error("Mass cannot be zero!");
+	}
     this.data[i * pSize + 10] = 1 / mass;
   }
 
   _getMass(i: number): number {
     const inverseMass = this.data[i * pSize + 10];
     if (inverseMass == 0) {
-      return this.data[i * pSize + 10];
+      return Infinity;
     } else {
       return 1 / inverseMass;
     }
@@ -139,24 +137,24 @@ class Particles {
   integrate(dt: number) {
     for (let i = 0; i < this.maxParticles * pSize; i += pSize) {
       // Update linear position: pos += vel * dt
-      this.data[i * pSize] += dt * this.data[i * pSize + 3]; // x
-      this.data[i * pSize + 1] += dt * this.data[i * pSize + 4]; // y
-      this.data[i * pSize + 2] += dt * this.data[i * pSize + 5]; // z
+      this.data[i] += dt * this.data[i + 3]; // x
+      this.data[i + 1] += dt * this.data[i + 4]; // y
+      this.data[i + 2] += dt * this.data[i + 5]; // z
 
       // Update velocity
-      this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
-      this.data[i * pSize + 4] += dt * this.data[i * pSize + 7];
-      this.data[i * pSize + 5] += dt * this.data[i * pSize + 8];
+      this.data[i + 3] += dt * this.data[i + 6];
+      this.data[i + 4] += dt * this.data[i + 7];
+      this.data[i + 5] += dt * this.data[i + 8];
 
       // Impose drag
-      this.data[i * pSize + 3] *= Math.pow(this.data[i * pSize + 9], dt);
-      this.data[i * pSize + 4] *= Math.pow(this.data[i * pSize + 9], dt);
-      this.data[i * pSize + 5] *= Math.pow(this.data[i * pSize + 9], dt);
+      this.data[i + 3] *= Math.pow(this.data[i + 9], dt);
+      this.data[i + 4] *= Math.pow(this.data[i + 9], dt);
+      this.data[i + 5] *= Math.pow(this.data[i + 9], dt);
 
       // zero out acceleration
-      this.data[i * pSize + 6] = 0;
-      this.data[i * pSize + 7] = 0;
-      this.data[i * pSize + 8] = 0;
+      this.data[i + 6] = 0;
+      this.data[i + 7] = 0;
+      this.data[i + 8] = 0;
     }
   }
 
