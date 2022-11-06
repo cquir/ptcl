@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-//0-2: position, 3-5: velocity, 6-8: acceleration (forceAccum is redundant), 9: damping, 10: 1/mass
-const pSize = 11;
+//0-2: position, 3-5: velocity, 6-8: acceleration (forceAccum is redundant), 9: damping, 10: 1/mass, 11-13: forceAccum
+const pSize = 14;
 
 class ParticleRef {
   // particle index
@@ -37,6 +37,22 @@ class ParticleRef {
 
   setMass(mass: number) {
     this.particles._setMass(this.pIndex, mass);
+  }
+
+  getPosition() {
+    return this.particles._getPosition(this.pIndex);
+  }
+
+  getVelocity() {
+    return this.particles._getPosition(this.pIndex);
+  }
+
+  getAcceleration() {
+    return this.particles._getPosition(this.pIndex);
+  }
+
+  resetState() {
+    this.particles._resetState(this.pIndex);
   }
 
   getMass(): number {
@@ -78,16 +94,18 @@ class ParticleIterator implements Iterator<ParticleRef> {
 class Particles {
   maxParticles: number;
   data: Float32Array;
+  constantForceAccum : THREE.Vector3;
 
-  constructor(maxParticles: number, meshes: Array<THREE.Mesh>) {
+  constructor(maxParticles: number) {
     this.maxParticles = maxParticles;
     this.data = new Float32Array(maxParticles * pSize);
-    this.meshes = meshes;
 
     // initialize damping
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
       this.data[i + 9] = 0.9999; // default damping
     }
+
+    this.constantForceAccum = new THREE.Vector3(0,0,0);
   }
 
   _setPosition(i: number, x: number, y: number, z: number) {
@@ -113,9 +131,9 @@ class Particles {
   }
 
   _setMass(i: number, mass: number) {
-  if (mass == 0) {
-    throw new Error("Mass cannot be zero!");
-  }
+    if (mass == 0) {
+      throw new Error("Mass cannot be zero!");
+    }
     this.data[i * pSize + 10] = 1 / mass;
   }
 
@@ -129,23 +147,31 @@ class Particles {
   }
 
   _addForce(i: number, x: number, y: number, z: number) {
-    const inverseMass = this.data[i * pSize + 10];
-    this.data[i * pSize + 6] += x * inverseMass;
-    this.data[i * pSize + 7] += y * inverseMass;
-    this.data[i * pSize + 8] += z * inverseMass;
+    // update forceAccum
+    this.data[i * pSize + 11] += x;
+    this.data[i * pSize + 12] += y;
+    this.data[i * pSize + 13] += z;
+  }
+
+  _addGlobalConstantForce(x: number, y: number, z: number) {
+    // update forceAccum
+    this.constantForceAccum.x += x;
+    this.constantForceAccum.y += y;
+    this.constantForceAccum.z += z;
   }
 
   integrate(dt: number) {
-    for (let i = 0; i < this.maxParticles; i ++) {
+    for (let i = 0; i < this.maxParticles; i++) {
       // Update linear position: pos += vel * dt
-      this.data[i * pSize] += dt * this.data[i * pSize + 3]; // x
+      this.data[i * pSize + 0] += dt * this.data[i * pSize + 3]; // x
       this.data[i * pSize + 1] += dt * this.data[i * pSize + 4]; // y
       this.data[i * pSize + 2] += dt * this.data[i * pSize + 5]; // z
 
-      // Update graphics
-      this.meshes[i].position.x = this.data[i * pSize]
-      this.meshes[i].position.y = this.data[i * pSize + 1]
-      this.meshes[i].position.z = this.data[i * pSize + 2]
+      // Work out acceleration from the force
+      const inverseMass = this.data[i * pSize + 10];
+      this.data[i * pSize + 6] = this.data[i * pSize + 11] * inverseMass;
+      this.data[i * pSize + 7] = this.data[i * pSize + 12] * inverseMass;
+      this.data[i * pSize + 8] = this.data[i * pSize + 13] * inverseMass;
 
       // Update velocity
       this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
@@ -157,18 +183,22 @@ class Particles {
       this.data[i * pSize + 4] *= Math.pow(this.data[i * pSize + 9], dt);
       this.data[i * pSize + 5] *= Math.pow(this.data[i * pSize + 9], dt);
 
+      // clear forceAccum
+      this.data[i * pSize + 11] = this.constantForceAccum.x;
+      this.data[i * pSize + 12] = this.constantForceAccum.y;
+      this.data[i * pSize + 13] = this.constantForceAccum.z;
     }
   }
 
-  getPosition(i: number): THREE.Vector3 {
+  _getPosition(i: number): THREE.Vector3 {
     return new THREE.Vector3(
-      this.data[i * pSize],
+      this.data[i * pSize + 0],
       this.data[i * pSize + 1],
       this.data[i * pSize + 2]
     );
   }
 
-  getVelocity(i: number): THREE.Vector3 {
+  _getVelocity(i: number): THREE.Vector3 {
     return new THREE.Vector3(
       this.data[i * pSize + 3],
       this.data[i * pSize + 4],
@@ -176,7 +206,7 @@ class Particles {
     );
   }
 
-  getAcceleration(i: number): THREE.Vector3 {
+  _getAcceleration(i: number): THREE.Vector3 {
     return new THREE.Vector3(
       this.data[i * pSize + 6],
       this.data[i * pSize + 7],
@@ -184,7 +214,15 @@ class Particles {
     );
   }
 
-  get(i: number) {
+  _resetState(i: number): void {
+    for (let j = 0; j < pSize; j++) {
+      if (j !== 9) {
+        this.data[i * pSize + j] = 0;
+      }
+    }
+  }
+
+  get(i: number): ParticleRef {
     return new ParticleRef(i, this);
   }
 
@@ -192,5 +230,7 @@ class Particles {
     return new ParticleIterator(this);
   }
 }
+
+export { ParticleRef, pSize };
 
 export default Particles;

@@ -16,4 +16,5 @@ jobs:
         with:
           node-version: 18.11.x
       - run: npm install -D
+      - run: npm run build
       - run: npm test
