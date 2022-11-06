@@ -17,42 +17,36 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const maxParticles = 5;
-const particles = new Particles(maxParticles);
 
-const geometry = new THREE.SphereGeometry(0.25, 8, 8);
+const geometry = new THREE.SphereGeometry(0.1, 8, 8);
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 let mesh = new THREE.Mesh(geometry, material);
 
-let meshes: Array<THREE.Mesh> = [];
-for (let particle of particles) {
-  particle.setPosition(particle.pIndex * 2 - 5, 0, 0);
-  particle.setMass(1);
-  particle.setVelocity(Math.random() / 10, Math.random(), Math.random() / 10);
+let meshes = [];
+for (let i=0; i < maxParticles; i++){
   let m = mesh.clone();
   meshes.push(m);
   scene.add(m);
 }
 
-camera.position.z = 5;
+const particles = new Particles(maxParticles,meshes);
+
+for (let particle of particles) {
+  particle.setPosition(particle.pIndex-2,0,0);
+  particle.setMass(1);
+  particle.setVelocity(0, 0, 0);
+  particle.addForce(0,-9.82,0);
+}
+
+camera.position.z = 10;
 
 const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
+
   particles.integrate(clock.getDelta());
-
-  // apply gravity
-  for (let particle of particles) {
-    particle.addForce(0,-9.82,0);
-  }
-
-  console.log(particles.getVelocity(3));
-
-  for (let i = 0; i < maxParticles; i++) {
-    const newPos = particles.getPosition(i);
-    meshes[i].position.set(newPos.x, newPos.y, newPos.z);
-  }
-
+  
   renderer.render(scene, camera);
 }
 

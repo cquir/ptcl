@@ -79,9 +79,10 @@ class Particles {
   maxParticles: number;
   data: Float32Array;
 
-  constructor(maxParticles: number) {
+  constructor(maxParticles: number, meshes: Array<THREE.Mesh>) {
     this.maxParticles = maxParticles;
     this.data = new Float32Array(maxParticles * pSize);
+	this.meshes = meshes;
 
     // initialize damping
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
@@ -135,26 +136,27 @@ class Particles {
   }
 
   integrate(dt: number) {
-    for (let i = 0; i < this.maxParticles * pSize; i += pSize) {
+    for (let i = 0; i < this.maxParticles; i ++) {
       // Update linear position: pos += vel * dt
-      this.data[i] += dt * this.data[i + 3]; // x
-      this.data[i + 1] += dt * this.data[i + 4]; // y
-      this.data[i + 2] += dt * this.data[i + 5]; // z
+      this.data[i * pSize] += dt * this.data[i * pSize + 3]; // x
+      this.data[i * pSize + 1] += dt * this.data[i * pSize + 4]; // y
+      this.data[i * pSize + 2] += dt * this.data[i * pSize + 5]; // z
+
+	  // Update graphics
+	  this.meshes[i].position.x = this.data[i * pSize]
+	  this.meshes[i].position.y = this.data[i * pSize + 1]
+	  this.meshes[i].position.z = this.data[i * pSize + 2]
 
       // Update velocity
-      this.data[i + 3] += dt * this.data[i + 6];
-      this.data[i + 4] += dt * this.data[i + 7];
-      this.data[i + 5] += dt * this.data[i + 8];
+      this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
+      this.data[i * pSize + 4] += dt * this.data[i * pSize + 7];
+      this.data[i * pSize + 5] += dt * this.data[i * pSize + 8];
 
       // Impose drag
-      this.data[i + 3] *= Math.pow(this.data[i + 9], dt);
-      this.data[i + 4] *= Math.pow(this.data[i + 9], dt);
-      this.data[i + 5] *= Math.pow(this.data[i + 9], dt);
+      this.data[i * pSize + 3] *= Math.pow(this.data[i * pSize + 9], dt);
+      this.data[i * pSize + 4] *= Math.pow(this.data[i * pSize + 9], dt);
+      this.data[i * pSize + 5] *= Math.pow(this.data[i * pSize + 9], dt);
 
-      // zero out acceleration
-      this.data[i + 6] = 0;
-      this.data[i + 7] = 0;
-      this.data[i + 8] = 0;
     }
   }
 
