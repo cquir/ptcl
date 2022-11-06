@@ -82,7 +82,7 @@ class Particles {
   constructor(maxParticles: number, meshes: Array<THREE.Mesh>) {
     this.maxParticles = maxParticles;
     this.data = new Float32Array(maxParticles * pSize);
-	this.meshes = meshes;
+    this.meshes = meshes;
 
     // initialize damping
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
@@ -113,9 +113,9 @@ class Particles {
   }
 
   _setMass(i: number, mass: number) {
-	if (mass == 0) {
-		throw new Error("Mass cannot be zero!");
-	}
+  if (mass == 0) {
+    throw new Error("Mass cannot be zero!");
+  }
     this.data[i * pSize + 10] = 1 / mass;
   }
 
@@ -142,10 +142,10 @@ class Particles {
       this.data[i * pSize + 1] += dt * this.data[i * pSize + 4]; // y
       this.data[i * pSize + 2] += dt * this.data[i * pSize + 5]; // z
 
-	  // Update graphics
-	  this.meshes[i].position.x = this.data[i * pSize]
-	  this.meshes[i].position.y = this.data[i * pSize + 1]
-	  this.meshes[i].position.z = this.data[i * pSize + 2]
+      // Update graphics
+      this.meshes[i].position.x = this.data[i * pSize]
+      this.meshes[i].position.y = this.data[i * pSize + 1]
+      this.meshes[i].position.z = this.data[i * pSize + 2]
 
       // Update velocity
       this.data[i * pSize + 3] += dt * this.data[i * pSize + 6];
