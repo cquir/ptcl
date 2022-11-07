@@ -6,7 +6,7 @@ async function build() {
       entryPoints: ["src/index.ts"],
       outdir: "dist/",
       bundle: true,
-      minify: true,
+      minify: false,
       treeShaking: true,
       platform: "node",
       format: "esm",
