@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 // TODO: figure out how we want to sync/update graphics with new data structure
 
 const pSize = 14;
