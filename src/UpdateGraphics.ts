@@ -42,5 +42,3 @@ function updateInstancedMesh(particles: Particles, iMesh: THREE.InstancedMesh) {
 }
 
 export { updateMeshesArray,updateInstancedMesh };
-
-
