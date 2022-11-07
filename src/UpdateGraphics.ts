@@ -12,7 +12,7 @@ function updateMeshesArray(particles: Particles, meshes: Array<THREE.Mesh>){
   }
 }
 
-function updateInstancedMesh(particles: Particles,iMesh: THREE.InstancedMesh) {
+function updateInstancedMesh(particles: Particles, iMesh: THREE.InstancedMesh) {
   // THREE.InstancedMesh stores the transformation matrices of all the
   // instances in a single contiguous buffer property instanceMatrix
   // which is of type THREE.InstancedBufferAttribute.
