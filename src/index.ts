@@ -1,4 +1,4 @@
-import Particles, {ParticleRef, pSize} from "./Particles";
+import {Particles, ParticleRef, pSize} from "./Particles";
 
 export {
   Particles,
