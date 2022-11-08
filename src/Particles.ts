@@ -231,6 +231,4 @@ class Particles {
   }
 }
 
-export { ParticleRef, pSize };
-
-export default Particles;
+export { Particles, ParticleRef, pSize };

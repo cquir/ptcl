@@ -1,8 +1,7 @@
 import * as THREE from "three";
+import { Particles, pSize } from "./Particles";
 
 // TODO: figure out how we want to sync/update graphics with new data structure
-
-const pSize = 14;
 
 function updateMeshesArray(particles: Particles, meshes: Array<THREE.Mesh>){
   for (let i=0; i < particles.maxParticles; i++){
