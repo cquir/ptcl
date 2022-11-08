@@ -14,38 +14,47 @@ This code creates an animation of a particle being thrown up in the air and fall
 
 ```ts
 import * as THREE from 'three';
-import { Particle, ParticleWorld, ParticleGravity } from 'ptcl';
+import { Particles, updateMeshesArray } from 'ptcl';
     
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 10;
         
 const scene = new THREE.Scene();
     
-let clock = new THREE.Clock();
-    
-const world = new ParticleWorld();
-const p = new Particle(new THREE.Vector3());
-p.velocity = new THREE.Vector3(0,10,0);
-world.registry.add(p,new ParticleGravity(new THREE.Vector3(0,-10,0)));
-world.addParticle(p);
+const clock = new THREE.Clock();
+
+const maxParticles = 5;
 
 const material = new THREE.MeshBasicMaterial();
 const geometry = new THREE.SphereGeometry(0.1);
-const s = new THREE.Mesh(geometry, material);
-p.mesh = s;
-scene.add(s);
+const mesh = new THREE.Mesh(geometry, material);
+
+let meshes = [];
+for (let i=0; i < maxParticles; i++){
+	const m = mesh.clone();
+	meshes.push(m);
+	scene.add(m);
+}
+
+const particles = new Particles(maxParticles); 
+particles._addGlobalConstantForce(0,-10,0);
+
+for (let particle of particles){
+	particle.setPosition(particle.pIndex-2,0,0);
+	particle.setMass(1);
+	particle.setVelocity(0,10,0);
+}
 
 const renderer = new THREE.WebGLRenderer({canvas: document.getElementById("game")});
 renderer.setSize( window.innerWidth, window.innerHeight );
 
 function animate() {
-  requestAnimationFrame(animate);
+	requestAnimationFrame(animate);
 
-  world.startFrame();
-  world.runPhysics(clock.getDelta());
-  world.updateGraphics();
-  
-  renderer.render(scene, camera);
+	particles.integrate(clock.getDelta());
+	updateMeshesArray(particles,meshes);
+
+	renderer.render(scene, camera);
 }
 animate();
 ```
