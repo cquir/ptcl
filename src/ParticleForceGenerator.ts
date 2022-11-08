@@ -1,7 +1,10 @@
+// TODO: figure out how we want to deal with force generators with new data structure
+
+/**
+
 import * as THREE from "three";
 import Particle from "./Particle";
 
-// TODO: figure out how we want to deal with force generators with new data structure
 
 interface ParticleForceGenerator {
   updateForce(particle: Particle, dt: number): void;
@@ -74,3 +77,5 @@ export {
   ParticleDrag,
   ParticleAttractor,
 };
+
+**/
