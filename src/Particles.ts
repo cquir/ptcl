@@ -58,6 +58,10 @@ class ParticleRef {
   getMass(): number {
     return this.particles._getMass(this.pIndex);
   }
+
+  hasFiniteMass() {
+    return this.particles._hasFiniteMass(this.pIndex);
+  }
 }
 
 class ParticleIterator implements Iterator<ParticleRef> {
@@ -144,6 +148,10 @@ class Particles {
     } else {
       return 1 / inverseMass;
     }
+  }
+
+  _hasFiniteMass(i: number) {
+    return this.data[i * pSize + 10] > 0;
   }
 
   _addForce(i: number, x: number, y: number, z: number) {
