@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import "./index.css";
 import { OrbitControls } from "three-stdlib";
-import { Particles, addParticleAttractor, updateMeshesArray } from "../../../src/index"; // fix import later
+import { Particles, addParticleAttractor, updateMeshesArray } from "ptcl"; 
 
 const camera = new THREE.PerspectiveCamera(
 	75,
