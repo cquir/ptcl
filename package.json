@@ -1,6 +1,6 @@
 {
   "name": "ptcl",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A lightweight physics engine for powering particle systems in threejs.",
   "main": "dist/index.js",
   "scripts": {
