@@ -86,7 +86,7 @@ async function main() {
   fs.writeFileSync(`demos/${name}/scripts/build.mjs`, fs.readFileSync("scripts/demo-templates/build.mjs"));
 
   fs.writeFileSync(`demos/${name}/src/index.ts`, fs.readFileSync("scripts/demo-templates/src/index.ts"));
-  fs.writeFileSync(`demos/${name}/src/index.ts`, fs.readFileSync("scripts/demo-templates/src/index.d.ts"));
+  fs.writeFileSync(`demos/${name}/src/index.d.ts`, fs.readFileSync("scripts/demo-templates/src/index.d.ts"));
   fs.writeFileSync(`demos/${name}/src/index.css`, fs.readFileSync("scripts/demo-templates/src/index.css"));
 
 
