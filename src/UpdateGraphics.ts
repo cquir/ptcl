@@ -3,11 +3,11 @@ import { Particles, pSize } from "./Particles";
 
 // TODO: figure out how we want to sync/update graphics with new data structure
 
-function updateMeshesArray(particles: Particles, meshes: Array<THREE.Mesh>){
-  for (let i=0; i < particles.maxParticles; i++){
-	meshes[i].position.x = particles.data[i * pSize];
-	meshes[i].position.y = particles.data[i * pSize + 1];
-	meshes[i].position.z = particles.data[i * pSize + 2];
+function updateMeshesArray(particles: Particles, meshes: Array<THREE.Mesh>) {
+  for (let i = 0; i < particles.maxParticles; i++) {
+    meshes[i].position.x = particles.data[i * pSize];
+    meshes[i].position.y = particles.data[i * pSize + 1];
+    meshes[i].position.z = particles.data[i * pSize + 2];
   }
 }
 
@@ -40,4 +40,4 @@ function updateInstancedMesh(particles: Particles, iMesh: THREE.InstancedMesh) {
   iMesh.instanceMatrix.needsUpdate = true;
 }
 
-export { updateMeshesArray,updateInstancedMesh };
+export { updateMeshesArray, updateInstancedMesh };

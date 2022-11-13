@@ -31,6 +31,14 @@ class ParticleRef {
     this.particles._addForce(this.pIndex, x, y, z);
   }
 
+  addPosition(x: number, y: number, z: number) {
+    this.particles._addPosition(this.pIndex, x, y, z);
+  }
+
+  addVelocity(x: number, y: number, z: number) {
+    this.particles._addVelocity(this.pIndex, x, y, z);
+  }
+
   setDamping(damping: number) {
     this.particles._setDamping(this.pIndex, damping);
   }
@@ -159,6 +167,18 @@ class Particles {
     this.data[i * pSize + 11] += x;
     this.data[i * pSize + 12] += y;
     this.data[i * pSize + 13] += z;
+  }
+
+  _addPosition(i: number, x: number, y: number, z: number) {
+    this.data[i * pSize + 0] += x;
+    this.data[i * pSize + 1] += y;
+    this.data[i * pSize + 2] += z;
+  }
+
+  _addVelocity(i: number, x: number, y: number, z: number) {
+    this.data[i * pSize + 3] += x;
+    this.data[i * pSize + 4] += y;
+    this.data[i * pSize + 5] += z;
   }
 
   _addGlobalConstantForce(x: number, y: number, z: number) {
