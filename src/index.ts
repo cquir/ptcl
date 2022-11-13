@@ -1,7 +1,14 @@
-import {Particles, ParticleRef, pSize} from "./Particles";
-import {addParticleGravity, addParticleDrag, addParticleAttractor} from "./ParticleForceGenerator";
-import {updateInstancedMesh, updateMeshesArray} from "./UpdateGraphics";
-import { particleSphereCollisionDetection, collisionResponse } from "./Collisions";
+import { Particles, ParticleRef, pSize } from "./Particles";
+import {
+  addParticleGravity,
+  addParticleDrag,
+  addParticleAttractor,
+} from "./ParticleForceGenerator";
+import { updateInstancedMesh, updateMeshesArray } from "./UpdateGraphics";
+import {
+  particleSphereCollisionDetection,
+  collisionResponse,
+} from "./Collisions";
 
 export {
   Particles,
@@ -13,5 +20,5 @@ export {
   updateInstancedMesh,
   updateMeshesArray,
   particleSphereCollisionDetection,
-  collisionResponse
+  collisionResponse,
 };
