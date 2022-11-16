@@ -6,8 +6,8 @@ import {
   ParticleRef,
   pSize,
   updateInstancedMesh,
-  particleSphereCollisionDetection,
   collisionResponse,
+  particleBoxCollisionDetection,
 } from "ptcl";
 
 const scene = new THREE.Scene();
@@ -53,17 +53,16 @@ const iMesh = new THREE.InstancedMesh(geometry, material, maxParticles);
 iMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 scene.add(iMesh);
 
-const colliderGeometry = new THREE.SphereGeometry(1.0, 16, 16);
+const colliderGeometry = new THREE.BoxGeometry(1,1,1,3,3,3);
 const colliderMaterial = new THREE.MeshBasicMaterial({ wireframe: true });
-const collider = new THREE.Mesh(colliderGeometry, colliderMaterial);
-collider.position.set(0, -1, 0);
+const collider = new THREE.Mesh(colliderGeometry,colliderMaterial);
+collider.position.set(0,-1,0);
+collider.rotateZ(-Math.PI/4);
 scene.add(collider);
 
 camera.position.z = 3;
 
 const clock = new THREE.Clock();
-
-let help = true;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -76,16 +75,16 @@ function animate() {
     particles._addForce(i, 0, -10, 0);
 
     const particle = particles.get(i);
-    const [collided, normal, penetration] = particleSphereCollisionDetection(
+    const [collided, normal, penetration] = particleBoxCollisionDetection(
       particle,
       geometry,
       collider,
       colliderGeometry
     );
     if (collided) {
-      collisionResponse(particle, normal, penetration, false);
+      collisionResponse(particle,normal,penetration,true);
     }
-
+   
     // if we fall below -10 reset the particle
     if (particles.data[i * pSize + 1] < -10) {
       initParticle(particles.get(i));
