@@ -83,7 +83,7 @@ function animate() {
       colliderGeometry
     );
     if (collided) {
-      collisionResponse(particle, normal, penetration, false);
+      collisionResponse(particle, normal, penetration);
     }
 
     // if we fall below -10 reset the particle

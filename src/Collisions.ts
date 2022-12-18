@@ -76,7 +76,6 @@ function collisionResponse(
   particle: ParticleRef,
   normal: THREE.Vector3,
   penetration: number,
-  withBox: boolean,
   Cr = 0
 ) {
   particle.addPosition(
@@ -84,8 +83,7 @@ function collisionResponse(
     penetration * normal.y,
     penetration * normal.z
   );
-  const sign = withBox? -1 : 1;
-  const norm = sign*(1 + Cr) * particle.getVelocity().dot(normal);
+  const norm = -(1 + Cr) * particle.getVelocity().dot(normal);
   particle.addVelocity(norm * normal.x, norm * normal.y, norm * normal.z);
 }
 
