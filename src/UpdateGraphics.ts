@@ -11,7 +11,7 @@ function updateMeshesArray(particles: Particles, meshes: Array<THREE.Mesh>) {
   }
 }
 
-function updateInstancedMesh(particles: Particles, iMesh: THREE.InstancedMesh) {
+function updateInstancedMesh(data: Float32Array, iMesh: THREE.InstancedMesh) {
   // THREE.InstancedMesh stores the transformation matrices of all the
   // instances in a single contiguous buffer property instanceMatrix
   // which is of type THREE.InstancedBufferAttribute.
@@ -28,9 +28,9 @@ function updateInstancedMesh(particles: Particles, iMesh: THREE.InstancedMesh) {
 
   for (let i = 0; i < iMesh.instanceMatrix.count; i++) {
     _mat4.setPosition(
-      particles.data[i * pSize + 0],
-      particles.data[i * pSize + 1],
-      particles.data[i * pSize + 2]
+      data[i * pSize + 0],
+      data[i * pSize + 1],
+      data[i * pSize + 2]
     );
     iMesh.setMatrixAt(i, _mat4);
   }

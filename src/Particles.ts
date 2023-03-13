@@ -52,11 +52,11 @@ class ParticleRef {
   }
 
   getVelocity() {
-    return this.particles._getPosition(this.pIndex);
+    return this.particles._getVelocity(this.pIndex);
   }
 
   getAcceleration() {
-    return this.particles._getPosition(this.pIndex);
+    return this.particles._getAcceleration(this.pIndex);
   }
 
   resetState() {
@@ -106,18 +106,22 @@ class ParticleIterator implements Iterator<ParticleRef> {
 class Particles {
   maxParticles: number;
   data: Float32Array;
-  constantForceAccum : THREE.Vector3;
+  constantForceAccum: THREE.Vector3;
 
-  constructor(maxParticles: number) {
+  constructor(maxParticles: number, data?: Float32Array) {
     this.maxParticles = maxParticles;
-    this.data = new Float32Array(maxParticles * pSize);
+    if (data !== undefined && data instanceof Float32Array) {
+      this.data = data;
+    } else {
+      this.data = new Float32Array(maxParticles * pSize);
+    }
 
     // initialize damping
     for (let i = 0; i < maxParticles * pSize; i += pSize) {
       this.data[i + 9] = 0.9999; // default damping
     }
 
-    this.constantForceAccum = new THREE.Vector3(0,0,0);
+    this.constantForceAccum = new THREE.Vector3(0, 0, 0);
   }
 
   _setPosition(i: number, x: number, y: number, z: number) {
@@ -215,6 +219,7 @@ class Particles {
       this.data[i * pSize + 11] = this.constantForceAccum.x;
       this.data[i * pSize + 12] = this.constantForceAccum.y;
       this.data[i * pSize + 13] = this.constantForceAccum.z;
+
     }
   }
 
