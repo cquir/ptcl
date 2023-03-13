@@ -52,11 +52,11 @@ class ParticleRef {
   }
 
   getVelocity() {
-    return this.particles._getPosition(this.pIndex);
+    return this.particles._getVelocity(this.pIndex);
   }
 
   getAcceleration() {
-    return this.particles._getPosition(this.pIndex);
+    return this.particles._getAcceleration(this.pIndex);
   }
 
   resetState() {
