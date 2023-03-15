@@ -1,0 +1,6 @@
+const PADDLE_SPEED = 7;
+const BALL_MASS = 1;
+const PADDLE_SIZE = 5;
+const HIT_SPEEDUP = 0.05;
+
+export { PADDLE_SPEED, BALL_MASS, PADDLE_SIZE, HIT_SPEEDUP };
