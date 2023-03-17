@@ -7,6 +7,7 @@ import {
 import { updateInstancedMesh, updateMeshesArray } from "./UpdateGraphics";
 import {
   particleSphereCollisionDetection,
+  particleBoxCollisionDetection,
   collisionResponse,
 } from "./Collisions";
 
@@ -20,5 +21,6 @@ export {
   updateInstancedMesh,
   updateMeshesArray,
   particleSphereCollisionDetection,
+  particleBoxCollisionDetection,
   collisionResponse,
 };
