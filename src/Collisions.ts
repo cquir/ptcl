@@ -56,7 +56,6 @@ function collisionResponse(
   particle: ParticleRef,
   normal: THREE.Vector3,
   penetration: number,
-  dt: number,
   Cr = 0
 ) {
   particle.addPosition(
