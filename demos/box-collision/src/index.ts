@@ -111,14 +111,16 @@ function initParticle(particle: ParticleRef) {
   particle.resetState();
   particle.setMass(2);
   particle.setPosition(0, 1, 0);
+  /*
   particle.setVelocity(
     0.1*(Math.random() - 0.5),
     0,
     0.1*(Math.random() - 0.5)
   );
+  */
 }
 
-const maxParticles = 1000;
+const maxParticles = 1;
 const particles = new Particles(maxParticles);
 
 for (let particle of particles) {
@@ -136,7 +138,7 @@ const colliderGeometry = new THREE.BoxGeometry(1,1,1,3,3,3);
 const colliderMaterial = new THREE.MeshBasicMaterial({ wireframe: true });
 const collider = new THREE.Mesh(colliderGeometry,colliderMaterial);
 collider.position.set(0,-1,0);
-collider.rotateZ(Math.PI/8)
+//collider.rotateZ(Math.PI/8)
 scene.add(collider);
 
 camera.position.z = 3;
@@ -158,9 +160,17 @@ function animate() {
       collider,
       colliderGeometry
     );
+
+    if (print && collided){
+      console.log(particle.getVelocity().y);
+      console.log(particles.data[4]);
+      print = false;
+    }
+
     if (collided) {
       collisionResponse(particles,i,normal,penetration,dt,0.0)
     }
+
     /*
     if (particles.data[i * pSize + 1] < -10) {
       initParticle(particle)
