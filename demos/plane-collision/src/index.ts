@@ -11,24 +11,21 @@ import {
 
 // **************************************************************
 
-function particleSphereCollisionDetection(
+function particlePlaneCollisionDetection(
   particle: ParticleRef,
   particleGeometry: THREE.SphereGeometry,
-  sphere: THREE.Mesh,
-  sphereGeometry: THREE.SphereGeometry
+  plane: THREE.Mesh,
 ) {
-  let midline = particle.getPosition();
-  midline.addScaledVector(sphere.position, -1);
-  const norm = midline.length();
+  const normal = new THREE.Vector3(0, 0, 1);
+  normal.applyQuaternion(plane.quaternion);
+  const offset = -normal.dot(plane.position);
+  const radius = particleGeometry.parameters.radius;
+  const distance = normal.dot(particle.getPosition()) + offset;
   let collided = false;
-  let normal = new THREE.Vector3();
   let penetration = 0;
-  const radiiSum =
-    particleGeometry.parameters.radius + sphereGeometry.parameters.radius;
-  if (norm <= radiiSum) {
+  if ((distance < 0) || (distance >= 0 && distance < radius)) {
     collided = true;
-    normal = midline.clone().multiplyScalar(1 / norm);
-    penetration = radiiSum - norm;
+    penetration = radius - distance;
   }
   let values: [boolean, THREE.Vector3, number] = [
     collided,
@@ -37,7 +34,6 @@ function particleSphereCollisionDetection(
   ];
   return values;
 }
-
 
 function collisionResponse(
   particles: Particles,
@@ -54,19 +50,22 @@ function collisionResponse(
     penetration * normal.z
   );
   let norm = Math.abs((1 + Cr) * particles._getVelocity(pIndex).dot(normal));
-  particles._addVelocity(pIndex,norm * normal.x, norm * normal.y, norm * normal.z);
+  particles._addVelocity(pIndex, norm * normal.x, norm * normal.y, norm * normal.z);
 }
 
 // **************************************************************
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("black");
+
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
+camera.position.y = 0.5;
+camera.position.z = 3;
 
 const renderer = new THREE.WebGLRenderer({
   //@ts-ignore
@@ -80,35 +79,29 @@ let controls = new OrbitControls(camera, renderer.domElement);
 function initParticle(particle: ParticleRef) {
   particle.resetState();
   particle.setMass(2);
-  particle.setPosition(0, 1, 0);
+  particle.setPosition(0, 2, 0);
   particle.setVelocity(
-    Math.random()-0.5,
+    Math.random() - 0.5,
     0,
-    Math.random()-0.5,
-  );
+    Math.random() - 0.5,
+  )
 }
-
 const maxParticles = 1000;
 const particles = new Particles(maxParticles);
-
+const geometry = new THREE.SphereGeometry(0.025, 8, 8);
 for (let particle of particles) {
   initParticle(particle);
 }
-
-const geometry = new THREE.SphereGeometry(0.025, 8, 8);
 const material = new THREE.MeshBasicMaterial({ color: "white" });
-
 const iMesh = new THREE.InstancedMesh(geometry, material, maxParticles);
-iMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 scene.add(iMesh);
 
-const colliderGeometry = new THREE.SphereGeometry(1.0, 16, 16);
-const colliderMaterial = new THREE.MeshBasicMaterial({ wireframe: true });
-const collider = new THREE.Mesh(colliderGeometry, colliderMaterial);
-collider.position.set(0, -1, 0);
-scene.add(collider);
-
-camera.position.z = 3;
+const planeGeometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+const planeMaterial = new THREE.MeshBasicMaterial({ wireframe: true });
+const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+plane.rotateX(-Math.PI / 2);
+//plane.rotateY(-Math.PI/8);
+scene.add(plane);
 
 const clock = new THREE.Clock();
 
@@ -117,38 +110,25 @@ let print = true;
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
-
   const dt = clock.getDelta();
-
-  // Not using iterator here since this runs every single frame
-  // and the iterator adds a lil bit of overhead.
   for (let i = 0; i < maxParticles; i++) {
-    // apply gravity
-    particles._addForce(i, 0, -1, 0);
-
+    particles._addForce(i, 0, -1 * 2, 0);
     const particle = particles.get(i);
-    const [collided, normal, penetration] = particleSphereCollisionDetection(
+    const [collided, normal, penetration] = particlePlaneCollisionDetection(
       particle,
       geometry,
-      collider,
-      colliderGeometry
+      plane
     );
+
     if (collided) {
-      collisionResponse(particles,i,normal,penetration,dt,0.0)
+      collisionResponse(particles, i, normal, penetration, dt, 1);
     }
-
-    // if we fall below -10 reset the particle
-    /*
     if (particles.data[i * pSize + 1] < -10) {
-      initParticle(particles.get(i));
+      initParticle(particle);
     }
-    */
   }
-
   particles.integrate(dt);
-
   updateInstancedMesh(particles, iMesh);
-
   renderer.render(scene, camera);
 }
 
