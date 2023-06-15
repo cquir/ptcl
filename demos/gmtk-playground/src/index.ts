@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import "./index.css";
-//import { OrbitControls } from "three-stdlib";
 import {
   Particles,
   ParticleRef,
@@ -91,7 +90,6 @@ function collisionResponse(
 // *****************************************************
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("black");
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -104,9 +102,6 @@ const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById("canvas"),
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-
-//let controls = new OrbitControls(camera, renderer.domElement);
 
 function initParticle(particle: ParticleRef) {
   particle.resetState();
@@ -133,21 +128,17 @@ const iMesh = new THREE.InstancedMesh(geometry, material, maxParticles);
 iMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 scene.add(iMesh);
 
+
 const colliderGeometry = new THREE.BoxGeometry(2, 1, 2, 3, 1, 3);
 const colliderMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: "red" });
 colliderMaterial.opacity = 0;
-colliderMaterial.transparent = true;
+colliderMaterial.transparent = false;
 const collider = new THREE.Mesh(colliderGeometry, colliderMaterial);
 collider.rotateZ(Math.PI / 8)
 collider.position.set(0, -1, 0)
 scene.add(collider)
 
-const boxGeometry = new THREE.BoxGeometry(2, 0.1, 2, 3, 1, 3);
-const boxMaterial = new THREE.MeshBasicMaterial({ wireframe: true });
-const box = new THREE.Mesh(boxGeometry, boxMaterial);
-box.rotateZ(Math.PI / 8);
-box.position.set(-0.45 * Math.cos(Math.PI / 2 - Math.PI / 8), 0.45 * Math.sin(Math.PI / 2 - Math.PI / 8) - 1, 0)
-scene.add(box);
+camera.position.z = 5;
 
 function handleDeviceOrientation(event) {
   // Get the rotation values from the event
@@ -159,7 +150,6 @@ function handleDeviceOrientation(event) {
   const gammaRad = THREE.MathUtils.degToRad(gamma);
 
   // Set the cube rotation based on the device orientation
-  box.rotation.set(betaRad, alphaRad, -gammaRad);
   collider.rotation.set(betaRad, alphaRad, -gammaRad);
 }
 
@@ -172,34 +162,22 @@ function checkSupportFor(name, propertyName, propertyOwner = window) {
   }
 }
 
+// if (checkSupportFor("Device Motion", "ondevicemotion")) {
+//   console.log("add devicemotion handler");
+//   window.addEventListener("devicemotion", handleDeviceMotion);
+// }
+
 if (checkSupportFor("Device Orientation", "ondeviceorientation")) {
   console.log("add deviceorientation handler");
   window.addEventListener("deviceorientation", handleDeviceOrientation);
 }
 
-camera.position.z = 3;
-
 const clock = new THREE.Clock();
-
-let print = true;
-
-let theta = 0;
 
 function animate() {
   requestAnimationFrame(animate);
-  //controls.update();
 
   const dt = clock.getDelta();
-
-  /*
-  const angle = 0.5 * Math.cos(theta);
-  collider.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
-  box.setRotationFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
-  box.position.set(-0.45 * Math.cos(Math.PI / 2 - angle), 0.45 * Math.sin(Math.PI / 2 - angle) - 1, 0)
-
-  theta += dt;
-  theta = theta > 2 * Math.PI ? 0 : theta;
-  */
 
   for (let i = 0; i < maxParticles; i++) {
     particles._addForce(i, 0, -10, 0);
@@ -211,12 +189,6 @@ function animate() {
       colliderGeometry
     );
 
-    if (print && collided) {
-      console.log(particle.getVelocity().y);
-      console.log(particles.data[4]);
-      print = false;
-    }
-
     if (collided) {
       collisionResponse(particles, i, normal, penetration, dt, 0.0)
     }
@@ -225,9 +197,11 @@ function animate() {
       initParticle(particle)
     }
   }
+
   particles.integrate(dt);
 
   updateInstancedMesh(particles, iMesh);
+
   renderer.render(scene, camera);
 }
 
