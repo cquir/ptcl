@@ -5,6 +5,8 @@ import * as path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
 import open from "open";
+import https from "https";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -58,6 +60,12 @@ async function build() {
 
   const app = express();
 
+  const options = {
+    key: fs.readFileSync("server.key"),
+    cert: fs.readFileSync("server.cert"),
+  };
+  const server = https.createServer(options, app);
+
   app.use(cors({ origin: "*" }));
 
   app.use((_, res, next) => {
@@ -73,10 +81,9 @@ async function build() {
 
   const port = process.env.PORT || 3000;
 
-  app.listen(port, () => {
-    open(`http://localhost:${port}`);
+  server.listen(port, () => {
+    open(`https://localhost:${port}`);
   });
-
 }
 
 build().catch((err) => {
